@@ -6,17 +6,17 @@
 /*   By: ldick <ldick@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 14:54:39 by ldick             #+#    #+#             */
-/*   Updated: 2025/09/16 11:46:16 by ldick            ###   ########.fr       */
+/*   Updated: 2025/09/16 14:16:41 by ldick            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "conway.h"
+#include "../includes/conway.h"
 
 void init(conway *con)
 {
 	con->mlx = mlx_init(WIDTH, HEIGHT, "conway", false);
 	con->img = mlx_new_image(con->mlx, WIDTH, HEIGHT);
-	con->edit = false;
+	con->edit = true;
 	mlx_image_to_window(con->mlx, con->img, 0, 0);
 	for (int x = 0; x < WIDTH; x++)
 		for (int y = 0; y < HEIGHT; y++)
@@ -59,8 +59,10 @@ void	cell_check(conway *con)
 	int alive = 0;
 	int i = 0;
 	for (int x = 0; x < WIDTH; x++)
+	{
 		for (int y = 0; y < HEIGHT; y++)
 		{
+			printf("%d\t%d\t%d\n", x, y, i);
 			if (x > 0 && y > 0 && con->cell[x - 1][y - 1]) alive++;
 			if (x > 0 && con->cell[x - 1][y]) alive++;
 			if (x > 0 && y < HEIGHT - 1 && con->cell[x - 1][y + 1]) alive++;
@@ -87,6 +89,7 @@ void	cell_check(conway *con)
 				}
 			alive = 0;
 		}
+	}
 	con->change_amount = i;
 }
 
@@ -100,7 +103,8 @@ void	events(void *param)
 	{
 		mouse_hook(con);
 	}
-	cell_check(con);
+	else
+		cell_check(con);
 	draw(con);
 }
 

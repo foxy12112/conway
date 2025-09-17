@@ -6,7 +6,7 @@
 /*   By: ldick <ldick@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 14:51:44 by ldick             #+#    #+#             */
-/*   Updated: 2025/09/16 11:38:00 by ldick            ###   ########.fr       */
+/*   Updated: 2025/09/16 14:17:44 by ldick            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ typedef struct conway
 	mlx_image_t *img;
 	bool	edit;
 	bool	cell[WIDTH][HEIGHT];
-	int		*to_change_x;
-	int		*to_change_y;
+	int		to_change_x[WIDTH * HEIGHT];
+	int		to_change_y[HEIGHT * HEIGHT];
 	int		change_amount;
 
 } conway;
