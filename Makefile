@@ -29,11 +29,9 @@ NC			:= \033[0m
 #											Flags												#
 #################################################################################################
 
-COMPILER	=	cc
-INCLUDES	=	-I includes -I main-libs
-SUBMODULE	=	main-libs/Makefile
-LIB_FLAGS	=	-L./MLX42/build -lmlx42
-CFLAGS		=	-g  -Wall -Werror -Wextra #-fsanitize=address
+COMPILER	=	c++
+INCLUDES	=	-I includes
+CFLAGS		=	-std=c++11 -g  #-Wall -Werror -Wextra #-fsanitize=address
 EXTRA_FLAGS	=	#-ffast-math #-0fast
 ERROR_FILE	=	error.log
 
@@ -41,30 +39,25 @@ ERROR_FILE	=	error.log
 #											Sources												#
 #################################################################################################
 
-_SRCS			=	main.c events.c
+_SRCS			=	main.cpp
 SRCS			=	$(addprefix srcs/, $(_SRCS))
 
 OBJS			=	$(SRCS:srcs/%.c=bin/%.o)
 
 #################################################################################################
-#											MLX													#
+#											SDL													#
 #################################################################################################
 
 USER = $(shell whoami)
 OS = $(shell uname)
-# OS = ("MINISHELL");
 
-ifeq ($(OS),Linux)
-		MLX_FLAGS = MLX42/build/libmlx42.a -Iinclude -ldl -lglfw -pthread -lm
-else ifeq ($(OS),Darwin)
-		MLX_FLAGS = -framework Cocoa -framework OpenGl -framework IOKit -lglfw -L"/Users/$(USER)/.brew/opt/glfw/lib"
-endif
+SDL_FLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2 -lm
 
 #################################################################################################
 #											Rules												#
 #################################################################################################
 
-all:			MLX42 $(NAME)
+all:			SDL $(NAME)
 
 bin:
 				@echo "\t\t\t$(BLUE) Making bin directory"
@@ -77,16 +70,13 @@ bin/%.o:		srcs/%.c | bin
 $(LIBRARY):		$(SUBMODULE)
 				@make -C main-libs --silent
 
-$(SUBMODULE):
-				@git submodule update --init --recursive
-
 $(NAME): $(LIBRARY) $(OBJS)
-				@$(COMPILER) -o $(NAME) $(OBJS) $(LIB_FLAGS) $(MLX_FLAGS) $(EXTRA_FLAGS) $(CFLAGS)
+				@$(COMPILER) -o $(NAME) $(OBJS) $(LIB_FLAGS) $(EXTRA_FLAGS) $(CFLAGS) $(SDL_FLAGS)
 				@echo "\t\t\t\t$(RED) compilation success :3$(NC)"
 
-MLX42:
-				@if [ ! -d "MLX42" ]; then git clone https://github.com/codam-coding-college/MLX42.git; fi
-				@cd MLX42 && cmake -B build -DDEBUG=1 && cmake --build build -j4
+SDL:
+				@if [ ! -d "SDL" ]; then git clone https://github.com/libsdl-org/SDL.git; fi
+				@cd SDL && mkdir build && cd build && cmake .. -DCMAKE_BIULD_TYPE=Release && cmake --build , --config Release --parallel && make install
 
 clean:
 				@rm -rf bin
@@ -94,7 +84,7 @@ clean:
 
 fclean:			clean
 				@rm -f $(NAME)
-				@rm -rf MLX42
+				@rm -rf SDL
 
 soft_clean:
 				@rm -f $(NAME)
